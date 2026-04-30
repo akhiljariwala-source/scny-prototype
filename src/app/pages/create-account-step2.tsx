@@ -123,12 +123,12 @@ export function CreateAccountStep2() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Utility Selection */}
-            <div className="border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden p-0.5">
+            <div className="border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden">
               <div className="flex">
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, utility: "con-edison" })}
-                  className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                  className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                     formData.utility === "con-edison"
                       ? "bg-[#0e2b2e] text-white"
                       : "bg-white text-[#4a5565]"
@@ -139,7 +139,7 @@ export function CreateAccountStep2() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, utility: "or" })}
-                  className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                  className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                     formData.utility === "or"
                       ? "bg-[#0e2b2e] text-white"
                       : "bg-white text-[#4a5565]"
@@ -150,7 +150,7 @@ export function CreateAccountStep2() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, utility: "other" })}
-                  className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                  className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                     formData.utility === "other"
                       ? "bg-[#0e2b2e] text-white"
                       : "bg-white text-[#4a5565]"
@@ -188,12 +188,12 @@ export function CreateAccountStep2() {
               <label className="block text-[#364153] text-[16px] font-medium mb-2">
                 What kind of utility account do you have?
               </label>
-              <div className="border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden p-0.5">
+              <div className="border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden">
                 <div className="flex">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, accountType: "residential" })}
-                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                       formData.accountType === "residential"
                         ? "bg-[#0e2b2e] text-white"
                         : "bg-white text-[#4a5565]"
@@ -204,7 +204,7 @@ export function CreateAccountStep2() {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, accountType: "business" })}
-                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                       formData.accountType === "business"
                         ? "bg-[#0e2b2e] text-white"
                         : "bg-white text-[#4a5565]"
@@ -230,12 +230,12 @@ export function CreateAccountStep2() {
                   <span className="text-[12px] font-semibold">?</span>
                 </button>
               </div>
-              <div className="border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden p-0.5">
+              <div className="border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden">
                 <div className="flex">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, touRate: "no" })}
-                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                       formData.touRate === "no"
                         ? "bg-[#0e2b2e] text-white"
                         : "bg-white text-[#4a5565]"
@@ -246,7 +246,7 @@ export function CreateAccountStep2() {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, touRate: "yes" })}
-                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                       formData.touRate === "yes"
                         ? "bg-[#0e2b2e] text-white"
                         : "bg-white text-[#4a5565]"
@@ -263,12 +263,12 @@ export function CreateAccountStep2() {
               <label className="block text-[#364153] text-[16px] font-medium mb-2 leading-6">
                 Are the vehicles you plan to enroll in the program registered as Passenger or Commercial vehicles?
               </label>
-              <div className="border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden p-0.5">
+              <div className="border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden">
                 <div className="flex">
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, vehicleType: "passenger" })}
-                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                       formData.vehicleType === "passenger"
                         ? "bg-[#0e2b2e] text-white"
                         : "bg-white text-[#4a5565]"
@@ -279,7 +279,7 @@ export function CreateAccountStep2() {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, vehicleType: "commercial" })}
-                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors rounded-[12px] ${
+                    className={`flex-1 h-[48px] font-medium text-[16px] transition-colors ${
                       formData.vehicleType === "commercial"
                         ? "bg-[#0e2b2e] text-white"
                         : "bg-white text-[#4a5565]"

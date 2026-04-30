@@ -37,7 +37,7 @@ export interface UserData {
   chargerConnected: boolean;
 
   // Verification
-  verificationStatus: "none" | "action_needed" | "in_progress" | "verified";
+  verificationStatus: "none" | "action_needed" | "in_progress" | "verified" | "failed";
   verificationAccountNumber: string;
   electricianInstalled: boolean;
   documentationSubmitted: boolean;
