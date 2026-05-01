@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Settings, ChevronLeft, CheckCircle2 } from "lucide-react";
+import { Settings, ChevronLeft, CheckCircle2, X } from "lucide-react";
 import imgImageConEdison from "figma:asset/f2fb4548cf1df6873e35ad4578fdf4175a324932.png";
 import imgImageOrangeRockland from "figma:asset/d6d2422b2c5dc2a946d736a3418a591adb55bee9.png";
 import { useUser } from "../context/UserContext";
@@ -21,9 +21,44 @@ export function VerifyAccount() {
     const existing = userData.verificationAccountNumber || userData.utilityAccountNumber;
     return existing ? formatAccountNumber(existing) : "";
   });
-  const [installedByElectrician, setInstalledByElectrician] = useState(userData.electricianInstalled);
-  const [submittedDocumentation, setSubmittedDocumentation] = useState(userData.documentationSubmitted);
+  const [installedByElectrician, setInstalledByElectrician] = useState<boolean | null>(null);
+  const [submittedDocumentation, setSubmittedDocumentation] = useState<boolean | null>(null);
   const [error, setError] = useState("");
+  const [activeModal, setActiveModal] = useState<"electrician" | "documentation" | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  useEffect(() => {
+    if (activeModal) {
+      setIsClosing(false);
+      const t = setTimeout(() => setIsModalVisible(true), 10);
+      return () => clearTimeout(t);
+    }
+  }, [activeModal]);
+
+  const openModal = (type: "electrician" | "documentation") => {
+    setActiveModal(type);
+  };
+
+  const closeModal = () => {
+    setIsClosing(true);
+    setIsModalVisible(false);
+    setTimeout(() => {
+      setActiveModal(null);
+      setIsClosing(false);
+    }, 300);
+  };
+
+  const modalContent = {
+    electrician: {
+      title: "Charger installation",
+      body: "You need a licensed electrician to install your charger to join the program.",
+    },
+    documentation: {
+      title: "Documentation",
+      body: "You'll need to submit documentation of your charger installation to join the program.",
+    },
+  };
 
   const handleAccountNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatAccountNumber(e.target.value);
@@ -34,20 +69,23 @@ export function VerifyAccount() {
 
   const getDigitCount = (value: string) => value.replace(/\D/g, "").length;
 
+  const bothQuestionsAnswered = installedByElectrician !== null && submittedDocumentation !== null;
+  const canSubmit = getDigitCount(accountNumber) === 11 && bothQuestionsAnswered;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate account number is exactly 11 digits
     if (getDigitCount(accountNumber) !== 11) {
       setError("Please enter a valid 11-digit utility account number.");
       return;
     }
+    const failed = installedByElectrician === false || submittedDocumentation === false;
     updateUser({
       verificationAccountNumber: accountNumber,
-      electricianInstalled: installedByElectrician,
-      documentationSubmitted: submittedDocumentation,
-      verificationStatus: "in_progress",
+      electricianInstalled: installedByElectrician!,
+      documentationSubmitted: submittedDocumentation!,
+      verificationStatus: failed ? "failed" : "in_progress",
     });
-    navigate('/dashboard-verification-progress');
+    navigate(failed ? '/dashboard-verification-failed' : '/dashboard-verification-progress');
   };
 
   return (
@@ -103,7 +141,7 @@ export function VerifyAccount() {
           </h1>
           
           <p className="text-[rgba(0,0,0,0.8)] text-[16px] mb-8 leading-relaxed">
-            Provide information associated with your Con Edison or Orange & Rockland account.
+            Enter information from your Con Edison or Orange & Rockland account.
           </p>
 
           <div className="mb-6">
@@ -132,7 +170,7 @@ export function VerifyAccount() {
               <p className="text-[#22c55e] text-[13px] mt-2 pl-2 font-medium">Looks good!</p>
             ) : (
               <p className="text-[#111c18] text-[12px] mt-2 pl-2 leading-tight">
-                Your 11-digit utility account number as it appears on your bill. If you plan to participate using your home charger, you must provide a utility account number.
+                Your 11-digit utility account number as it appears on your bill. If you're using your home charger, you'll need to provide this number.
               </p>
             )}
             {error && (
@@ -141,26 +179,25 @@ export function VerifyAccount() {
           </div>
 
           <div className="mb-6">
-            <div className="flex items-center gap-2 mb-2 pl-2">
-              <label className="text-[#111c18] text-[16px] font-bold">
+            <div className="flex items-center gap-2 mb-2">
+              <label className="text-[#364153] text-[16px] font-medium">
                 Was your charger installed by a licensed electrician?
               </label>
               <button
                 type="button"
-                className="w-5 h-5 rounded-full border-2 border-[#6b7280] flex items-center justify-center text-[#6b7280] hover:border-[#4a5565] hover:text-[#4a5565] transition-colors"
-                title="Get help with this question"
+                onClick={() => openModal("electrician")}
+                className="w-5 h-5 rounded-full border-2 border-[#6b7280] flex items-center justify-center text-[#6b7280] hover:border-[#4a5565] hover:text-[#4a5565] transition-colors shrink-0"
               >
                 <span className="text-[12px] font-semibold">?</span>
               </button>
             </div>
-            <div className="flex border-2 border-[#0e2b2e] rounded-full overflow-hidden">
+            <div className="flex border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden">
               <button
                 type="button"
                 onClick={() => setInstalledByElectrician(true)}
                 className={`flex-1 py-3 font-medium text-[16px] transition-colors ${
-                  installedByElectrician
-                    ? 'bg-[#0e2b2e] text-white'
-                    : 'bg-white text-[#0e2b2e]'
+                  installedByElectrician === true ? 'bg-[#0e2b2e] text-white' :
+                  'bg-[#fbfdfc] text-[#4a5565] border-r border-[#c2c9c6]'
                 }`}
               >
                 Yes
@@ -169,9 +206,8 @@ export function VerifyAccount() {
                 type="button"
                 onClick={() => setInstalledByElectrician(false)}
                 className={`flex-1 py-3 font-medium text-[16px] transition-colors ${
-                  !installedByElectrician
-                    ? 'bg-[#0e2b2e] text-white'
-                    : 'bg-white text-[#0e2b2e]'
+                  installedByElectrician === false ? 'bg-[#0e2b2e] text-white' :
+                  'bg-[#fbfdfc] text-[#4a5565]'
                 }`}
               >
                 No
@@ -180,26 +216,25 @@ export function VerifyAccount() {
           </div>
 
           <div className="mb-6">
-            <div className="mb-2 pl-2">
-              <label className="text-[#111c18] text-[16px] font-bold leading-tight inline">
-                Did you submit proper documentation to your utility when the charger was installed?
+            <div className="flex items-center gap-2 mb-2">
+              <label className="text-[#364153] text-[16px] font-medium">
+                Did you submit documentation to your utility when your charger was installed?
               </label>
               <button
                 type="button"
-                className="w-5 h-5 ml-2 inline-flex flex-shrink-0 rounded-full border-2 border-[#6b7280] items-center justify-center text-[#6b7280] hover:border-[#4a5565] hover:text-[#4a5565] transition-colors align-middle"
-                title="Get help with this question"
+                onClick={() => openModal("documentation")}
+                className="w-5 h-5 rounded-full border-2 border-[#6b7280] flex items-center justify-center text-[#6b7280] hover:border-[#4a5565] hover:text-[#4a5565] transition-colors shrink-0"
               >
                 <span className="text-[12px] font-semibold">?</span>
               </button>
             </div>
-            <div className="flex border-2 border-[#0e2b2e] rounded-full overflow-hidden">
+            <div className="flex border-2 border-[#0e2b2e] rounded-[14px] overflow-hidden">
               <button
                 type="button"
                 onClick={() => setSubmittedDocumentation(true)}
                 className={`flex-1 py-3 font-medium text-[16px] transition-colors ${
-                  submittedDocumentation
-                    ? 'bg-[#0e2b2e] text-white'
-                    : 'bg-white text-[#0e2b2e]'
+                  submittedDocumentation === true ? 'bg-[#0e2b2e] text-white' :
+                  'bg-[#fbfdfc] text-[#4a5565] border-r border-[#c2c9c6]'
                 }`}
               >
                 Yes
@@ -208,9 +243,8 @@ export function VerifyAccount() {
                 type="button"
                 onClick={() => setSubmittedDocumentation(false)}
                 className={`flex-1 py-3 font-medium text-[16px] transition-colors ${
-                  !submittedDocumentation
-                    ? 'bg-[#0e2b2e] text-white'
-                    : 'bg-white text-[#0e2b2e]'
+                  submittedDocumentation === false ? 'bg-[#0e2b2e] text-white' :
+                  'bg-[#fbfdfc] text-[#4a5565]'
                 }`}
               >
                 No
@@ -220,9 +254,9 @@ export function VerifyAccount() {
 
           <button
             type="submit"
-            disabled={getDigitCount(accountNumber) !== 11}
+            disabled={!canSubmit}
             className={`w-full py-3 rounded-full font-medium text-[16px] transition-colors ${
-              getDigitCount(accountNumber) === 11
+              canSubmit
                 ? 'bg-[#0e2b2e] text-white hover:bg-[#1a3f43]'
                 : 'bg-[#d1d5dc] text-[#6a7282] cursor-not-allowed'
             }`}
@@ -231,6 +265,59 @@ export function VerifyAccount() {
           </button>
         </form>
       </div>
+
+      {activeModal && (
+        <>
+          {/* Backdrop */}
+          <div
+            onClick={closeModal}
+            className={`fixed inset-0 bg-[#111c18] z-40 transition-opacity duration-300 ${isClosing ? "ease-in" : "ease-out"} ${
+              isModalVisible ? "opacity-40" : "opacity-0"
+            }`}
+          />
+          {/* Bottom sheet */}
+          <div
+            className={`fixed bottom-0 left-1/2 -translate-x-1/2 bg-[#fbfdfc] rounded-tl-[16px] rounded-tr-[16px] w-[375px] flex flex-col gap-4 p-4 shadow-[0px_2px_19px_rgba(0,0,0,0.07)] z-50 transition-transform duration-300 ${isClosing ? "ease-in" : "ease-out"} ${
+              isModalVisible ? "translate-y-0" : "translate-y-full"
+            }`}
+          >
+            {/* Header */}
+            <div className="flex items-center h-[44px]">
+              <button
+                onClick={closeModal}
+                className="w-6 h-6 flex items-center justify-center text-black hover:text-[#4a5565] transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex flex-col gap-2 text-black">
+              <p className="font-bold text-[18px] leading-[24px]">
+                {modalContent[activeModal].title}
+              </p>
+              <p className="text-[16px] leading-[20px] font-normal">
+                {modalContent[activeModal].body}
+              </p>
+            </div>
+
+            {/* Got it button */}
+            <button
+              onClick={closeModal}
+              className="w-full h-12 bg-[#0e2b2e] text-[#f4fbf9] rounded-full font-bold text-[16px] hover:bg-[#1a3f43] transition-colors"
+            >
+              Got it
+            </button>
+
+            {/* Learn More link */}
+            <div className="flex items-center justify-center">
+              <button className="text-[#3a7165] text-[16px] font-bold underline leading-[20px]">
+                Learn More
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

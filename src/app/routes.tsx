@@ -21,6 +21,7 @@ import {
   DashboardWithAction,
   VerifyAccount,
   DashboardVerificationProgress,
+  DashboardVerificationFailed,
   EmailConfirmation,
   DashboardVerified,
   EmailVerified,
@@ -111,6 +112,10 @@ export const router = createHashRouter([
   {
     path: "/dashboard-verification-progress",
     Component: DashboardVerificationProgress,
+  },
+  {
+    path: "/dashboard-verification-failed",
+    Component: DashboardVerificationFailed,
   },
   {
     path: "/email-confirmation",

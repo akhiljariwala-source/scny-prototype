@@ -19,6 +19,7 @@ export { Dashboard } from './dashboard';
 export { DashboardWithAction } from './dashboard-with-action';
 export { VerifyAccount } from './verify-account';
 export { DashboardVerificationProgress } from './dashboard-verification-progress';
+export { DashboardVerificationFailed } from './dashboard-verification-failed';
 export { EmailConfirmation } from './email-confirmation';
 export { DashboardVerified } from './dashboard-verified';
 export { EmailVerified } from './email-verified';
